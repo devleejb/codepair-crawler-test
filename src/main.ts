@@ -1,34 +1,29 @@
-/**
- * Some predefined delay values (in milliseconds).
- */
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
-}
+import { Cluster } from 'puppeteer-cluster';
+import { runTypeTextTest } from './tests/type-text.js';
 
-/**
- * Returns a Promise<string> that resolves after a given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - A number of milliseconds to delay resolution of the Promise.
- * @returns {Promise<string>}
- */
-function delayedHello(
-  name: string,
-  delay: number = Delays.Medium,
-): Promise<string> {
-  return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
-  );
-}
+// CodePair Share URL
+const DOCUMENT_URL = `http://localhost:5173/devleejb/671b7aba1bbee1535b53518d/share?token=xscexh`;
 
-// Please see the comment in the .eslintrc.json file about the suppressed rule!
-// Below is an example of how to use ESLint errors suppression. You can read more
-// at https://eslint.org/docs/latest/user-guide/configuring/rules#disabling-rules
+const main = async (): Promise<void> => {
+  // # of Users
+  const maxConcurrency = 30;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any
-export async function greeter(name: any) {
-  // The name parameter should be of type string. Any is used only to trigger the rule.
-  return await delayedHello(name, Delays.Long);
-}
+  const cluster = await Cluster.launch({
+    concurrency: Cluster.CONCURRENCY_CONTEXT,
+    maxConcurrency,
+    puppeteerOptions: {
+      headless: true, // If true, the browser is not shown
+      args: [`--window-size=${1680},${970}`],
+    },
+    timeout: 999999999,
+  });
+
+  for (let i = 0; i < maxConcurrency; i++) {
+    await cluster.queue(DOCUMENT_URL, runTypeTextTest);
+  }
+
+  await cluster.idle();
+  await cluster.close();
+};
+
+main();
