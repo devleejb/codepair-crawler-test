@@ -1,13 +1,16 @@
 import { TaskFunction } from 'puppeteer-cluster/dist/Cluster.js';
 
-const EDITOR_SELECTOR = '.cm-content.cm-lineWrapping';
-const targetText =
-  `Lorem ipsum odor amet, consectetuer adipiscing elit. Aptent tincidunt eu imperdiet nam dolor porta congue, odio ridiculus. 
-Lacinia posuere pretium donec amet sociosqu suspendisse egestas. Torquent taciti metus tincidunt molestie at eros rhoncus volutpat. 
-Pretium senectus turpis dis magna penatibus; dui felis molestie. Viverra senectus maecenas, primis tellus eget facilisi.
-Enim posuere auctor eleifend odio praesent porta taciti massa.
+const EDITOR_SELECTOR = '.cm-line';
+const targetText = `
+Lorem Ipsum is simply dummy text of the printing and typesetting industry.
 
-`.repeat(10);
+Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+
+It was popularised in
+
+`.repeat(1000);
 
 export const runTypeTextTest: TaskFunction<string, void> = async ({
   page,
@@ -29,6 +32,6 @@ export const runTypeTextTest: TaskFunction<string, void> = async ({
 
   // Type one by one
   for (const c of targetText) {
-    await page.keyboard.type(c, { delay: 300 });
+    await page.keyboard.type(c, { delay: 240 });
   }
 };
